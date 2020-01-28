@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 
 class NoticeBoardListItemWidget extends StatefulWidget {
   String nome;
   String descrizione;
+  Icon star = Icon(OMIcons.starBorder);
 
   NoticeBoardListItemWidget(this.nome, this.descrizione);
 
@@ -13,6 +15,7 @@ class NoticeBoardListItemWidget extends StatefulWidget {
 }
 
 class _NoticeBoardListItemWidgetState extends State<NoticeBoardListItemWidget> {
+   IconData star = Icon(IconData());
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -33,16 +36,15 @@ class _NoticeBoardListItemWidgetState extends State<NoticeBoardListItemWidget> {
       ),
       actions: <Widget>[
         IconSlideAction(
-          caption: 'Save',
-          color: Colors.blue,
-          icon: OMIcons.save,
-          onTap: () => save,
+          caption: 'Remove',
+          color: Colors.red,
+          icon: OMIcons.delete,
         ),
         IconSlideAction(
-          caption: 'Readed',
-          color: Colors.indigo,
-          icon: OMIcons.done,
-          onTap: () => readed,
+          caption: 'Favorite',
+          color: Colors.amber,
+          icon: star,
+          onTap: ,
         ),
       ],
     );
