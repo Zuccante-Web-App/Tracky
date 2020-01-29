@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:tracky/UI/Screen/List/SlidableListWidget.dart';
 
-class NoticeBoardListItemWidget extends StatefulWidget {
+class SlidableListItemWidget extends StatefulWidget {
   String nome;
-  String descrizione;
-  Icon star = Icon(OMIcons.starBorder);
+  int prezzo;
+  int index;
 
-  NoticeBoardListItemWidget(this.nome, this.descrizione);
+  SlidableListItemWidget(this.nome, this.prezzo, this.index);
 
   @override
-  _NoticeBoardListItemWidgetState createState() =>
-      _NoticeBoardListItemWidgetState();
+  _SlidableListItemWidgetState createState() =>
+      _SlidableListItemWidgetState();
 }
 
-class _NoticeBoardListItemWidgetState extends State<NoticeBoardListItemWidget> {
-   IconData star = Icon(IconData());
+class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
+  //Icon star = Icon(OMIcons.starBorder);
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -29,24 +30,27 @@ class _NoticeBoardListItemWidgetState extends State<NoticeBoardListItemWidget> {
             style: TextStyle(color: Colors.black),
           ),
           subtitle: Text(
-            widget.descrizione,
+            widget.prezzo.toString(),
             style: TextStyle(color: Colors.black),
           ),
         ),
       ),
       actions: <Widget>[
         IconSlideAction(
-          caption: 'Remove',
+          caption: 'Delete',
           color: Colors.red,
           icon: OMIcons.delete,
+          onTap:(){
+            MySlidableListWidget.deleteProduct(widget.index);
+          }
         ),
         IconSlideAction(
           caption: 'Favorite',
-          color: Colors.amber,
-          icon: star,
-          onTap: ,
+          color: Colors.amber[300],
+          icon: OMIcons.starBorder,
         ),
       ],
     );
   }
 }
+
