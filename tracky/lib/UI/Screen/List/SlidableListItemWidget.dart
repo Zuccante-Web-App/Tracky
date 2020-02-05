@@ -3,24 +3,26 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:tracky/UI/Screen/List/SlidableListWidget.dart';
 
+IconData star = OMIcons.starBorder;
+bool isFavourite = true;
+
 class SlidableListItemWidget extends StatefulWidget {
   String nome;
   int prezzo;
   int index;
   GlobalKey<AnimatedListState> _productList;
   List<Product> _myList;
-  IconData star = OMIcons.starBorder;
+  List<bool> _boolList;
+  List<IconData> _iconList;
 
-  SlidableListItemWidget(
-      this.nome, this.prezzo, this.index, this._productList, this._myList);
+  SlidableListItemWidget(this.nome, this.prezzo, this.index, this._productList,
+      this._myList, this._boolList, this._iconList);
 
   @override
   _SlidableListItemWidgetState createState() => _SlidableListItemWidgetState();
 }
 
 class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
-  bool isFavourite = true;
-  //Icon star = Icon(OMIcons.starBorder);
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -33,9 +35,20 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
             widget.nome,
             style: TextStyle(color: Colors.black),
           ),
-          subtitle: Text(
-            widget.prezzo.toString(),
-            style: TextStyle(color: Colors.black),
+          trailing: Container(
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.green,
+              child: Text(
+                widget.prezzo.toString(),
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
+            padding: EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
           ),
         ),
       ),
@@ -45,10 +58,10 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
             color: Colors.red,
             icon: OMIcons.delete,
             onTap: delete),
-         IconSlideAction(
+        IconSlideAction(
           caption: 'Favorite',
           color: Colors.amber[300],
-          icon: widget.star,
+          icon: widget._iconList[widget.index],
           onTap: makeFavorite,
         ),
       ],
@@ -73,24 +86,27 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
   }
 
   void makeFavorite() {
-    print("ciao$isFavourite ");
     setState(() {
-      /*if (isFavourite) {
-        print("entrato nel if");
-        isFavourite = false;
-        widget.star = OMIcons.starBorder;
+      Product favoriteProduct = widget._myList[widget.index];
+      AnimatedListRemovedItemBuilder builder = (context, animation) {
+        return _buildItem(favoriteProduct, animation);
+      };
+      widget._productList.currentState.removeItem(widget.index, builder);
+      widget._myList.removeAt(widget.index);
+      if (widget._boolList[widget.index]) {
+        widget._boolList.removeAt(widget.index);
+        widget._boolList.insert(widget.index, true);
+        widget._iconList.removeAt(widget.index);
+        widget._iconList.insert(widget.index, OMIcons.star);
+        widget._myList.insert(widget._myList.length - 1, favoriteProduct);
       } else {
-        print(isFavourite);*/
-        Product favoriteProduct = widget._myList[widget.index];
-        AnimatedListRemovedItemBuilder builder = (context, animation) {
-          return _buildItem(favoriteProduct, animation);
-        };
-        widget._productList.currentState.removeItem(widget.index, builder);
-        widget._myList.removeAt(widget.index);
+        widget._iconList.removeAt(widget.index);
+        widget._iconList.insert(widget.index, OMIcons.starBorder);
         widget._myList.insert(0, favoriteProduct);
-        widget._productList.currentState.insertItem(widget.index); 
-        //isFavourite = true;
+        widget._boolList.removeAt(widget.index);
+        widget._boolList.insert(widget.index, false);
+      }
+      widget._productList.currentState.insertItem(widget.index);
     });
   }
 }
-

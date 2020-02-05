@@ -8,6 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tracky',
+      debugShowCheckedModeBanner: false,
       theme:
           ThemeData(brightness: Brightness.light, primaryColor: Colors.amber),
       darkTheme:
