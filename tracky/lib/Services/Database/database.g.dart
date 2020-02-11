@@ -151,6 +151,14 @@ class _$PriceDao extends PriceDao {
   }
 
   @override
+  Future<Price> findLatestPriceFromProductId(int id) async {
+    return _queryAdapter.query(
+        'SELECT Price.* FROM Price JOIN Product ON Price.idProduct = Product.id WHERE Product.id = ? LIMIT=1',
+        arguments: <dynamic>[id],
+        mapper: _priceMapper);
+  }
+
+  @override
   Future<void> insertPrice(Price price) async {
     await _priceInsertionAdapter.insert(price, sqflite.ConflictAlgorithm.abort);
   }

@@ -10,4 +10,7 @@ abstract class PriceDao {
 
 	@insert
 	Future<void> insertPrice(Price price);
+
+	@Query('SELECT Price.* FROM Price JOIN Product ON Price.idProduct = Product.id WHERE Product.id = :id LIMIT=1')
+	Future<Price> findLatestPriceFromProductId(int id);
 }
