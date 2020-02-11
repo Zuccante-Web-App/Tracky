@@ -1,6 +1,6 @@
 
 
-<img src = "./icona/Icona.png align = "right" />
+<img src="./icona/Icona.png" align="right" height="120" width="120"/>
               
 # Tracky 
 ## Un price tracker per Amazon 
