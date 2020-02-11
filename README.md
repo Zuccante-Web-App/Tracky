@@ -1,4 +1,8 @@
-# Tracky
+
+
+<img src = "./icona/Icona.png align = "right" />
+              
+# Tracky 
 ## Un price tracker per Amazon 
 
 our aim is to make the world better 💪🏻 
