@@ -10,9 +10,9 @@ class MyApp extends StatelessWidget {
       title: 'Tracky',
       debugShowCheckedModeBanner: false,
       theme:
-          ThemeData(brightness: Brightness.light, primaryColor: Colors.amber),
+          ThemeData(brightness: Brightness.light, primaryColor: Colors.amber, textTheme: Typography(platform: TargetPlatform.android).black),
       darkTheme:
-          ThemeData(brightness: Brightness.dark, primaryColor: Colors.amber),
+          ThemeData(brightness: Brightness.dark, primaryColor: Colors.amber, textTheme: Typography(platform: TargetPlatform.android).black),
       home: HomePageWidget(),
     );
   }

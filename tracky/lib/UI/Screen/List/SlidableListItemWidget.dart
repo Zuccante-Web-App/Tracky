@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -7,7 +9,9 @@ IconData star = OMIcons.starBorder;
 bool isFavourite = true;
 
 class SlidableListItemWidget extends StatefulWidget {
+  
   String nome;
+  String produttore;
   int prezzo;
   int index;
   GlobalKey<AnimatedListState> _productList;
@@ -25,28 +29,41 @@ class SlidableListItemWidget extends StatefulWidget {
 class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
   @override
   Widget build(BuildContext context) {
+    final Brightness brightnessValue = MediaQuery.of(context).platformBrightness;
+    bool isDark = brightnessValue == Brightness.dark;
+    Color circleColorGreen;
+    Color circleColorRed;
+    //**Color */
+    if(isDark){
+      circleColorGreen = Colors.limeAccent[400];
+      circleColorRed = Colors.deepOrange;
+    }
+    else{
+      circleColorGreen = Colors.green;
+      circleColorRed = Colors.red;
+    }
+
+
+
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
       child: Container(
-        color: Colors.white,
         child: ListTile(
           title: Text(
             widget.nome,
-            style: TextStyle(color: Colors.black),
           ),
           trailing: Container(
             child: CircleAvatar(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.green,
-              child: Text(
+              foregroundColor: circleColorGreen,
+                  child: Text(
                 widget.prezzo.toString(),
                 style: TextStyle(fontSize: 13),
               ),
             ),
             padding: EdgeInsets.all(2.0),
             decoration: BoxDecoration(
-              color: Colors.green,
+              color: Colors.limeAccent[400],
               shape: BoxShape.circle,
             ),
           ),
@@ -67,6 +84,8 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
       ],
     );
   }
+
+ 
 
   Widget _buildItem(Product product, Animation animation) {
     return SizeTransition(
