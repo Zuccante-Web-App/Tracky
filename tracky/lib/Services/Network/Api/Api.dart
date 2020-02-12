@@ -12,7 +12,10 @@ const String PRODUCT_PRICE_ID = "priceblock_ourprice";
 const String SUMMARY_PRODUCT_LINK_CLASSES = "a-link-normal a-text-normal";  //viene usata anche per il nome
 const String SUMMARY_PRODUCT_PRICE_CLASSES = "a-size-base a-link-normal s-no-hover a-text-normal";
 
+
+/// get a product using its link
 Future<APIResponse<Product>> getProductByLink(String url) async {
+  if(url == null || url == "") return APIResponse<Product>(false); 
   http.Response res = await http.get(url);
   if(res.statusCode >= 300 || res.statusCode < 200){
     return APIResponse<Product>(false);
