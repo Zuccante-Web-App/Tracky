@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky/UI/Screen/HomePageWidget.dart';
+import 'package:tracky/UI/SimpleItems/colorsPalette.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,9 +11,9 @@ class MyApp extends StatelessWidget {
       title: 'Tracky',
       debugShowCheckedModeBanner: false,
       theme:
-          ThemeData(brightness: Brightness.light, primaryColor: Colors.amber, textTheme: Typography(platform: TargetPlatform.android).black),
+          ThemeData(brightness: Brightness.light, primaryColor: Colors.amber, textSelectionColor:textColor),
       darkTheme:
-          ThemeData(brightness: Brightness.dark, primaryColor: Colors.amber, textTheme: Typography(platform: TargetPlatform.android).black),
+          ThemeData(brightness: Brightness.dark, primaryColor: Colors.amber, textSelectionColor: textColor),
       home: HomePageWidget(),
     );
   }

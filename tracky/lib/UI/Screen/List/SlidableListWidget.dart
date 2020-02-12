@@ -5,6 +5,7 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:tracky/UI/Screen/Search/SearchPageWidget.dart';
 
 
+
 List<IconData> _iconList = List<IconData>();
 List<bool> _boolFavouriteList = List<bool>();
 

@@ -1,9 +1,8 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:tracky/UI/Screen/List/SlidableListWidget.dart';
+import 'package:tracky/UI/SimpleItems/colorsPalette.dart';
 
 IconData star = OMIcons.starBorder;
 bool isFavourite = true;
@@ -18,6 +17,7 @@ class SlidableListItemWidget extends StatefulWidget {
   List<Product> _myList;
   List<bool> _boolList;
   List<IconData> _iconList;
+ 
 
   SlidableListItemWidget(this.nome, this.prezzo, this.index, this._productList,
       this._myList, this._boolList, this._iconList);
@@ -29,21 +29,21 @@ class SlidableListItemWidget extends StatefulWidget {
 class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
   @override
   Widget build(BuildContext context) {
-    final Brightness brightnessValue = MediaQuery.of(context).platformBrightness;
-    bool isDark = brightnessValue == Brightness.dark;
-    Color circleColorGreen;
-    Color circleColorRed;
+     Brightness brightnessValue = MediaQuery.of(context).platformBrightness;
+     bool isDark = brightnessValue == Brightness.dark;
     //**Color */
     if(isDark){
-      circleColorGreen = Colors.limeAccent[400];
-      circleColorRed = Colors.deepOrange;
+      circle = greenDarkCircle;
+      textColor = Colors.white;
+      backColor = null;
+      textCircleColor = greenDarkCircle;
     }
     else{
-      circleColorGreen = Colors.green;
-      circleColorRed = Colors.red;
+      circle = greenLightCircle;
+      textColor = Colors.black;
+      backColor = Colors.white;
+      textCircleColor = greenLightCircle;
     }
-
-
 
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
@@ -55,15 +55,16 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
           ),
           trailing: Container(
             child: CircleAvatar(
-              foregroundColor: circleColorGreen,
+              backgroundColor: backColor,
+              foregroundColor: circle,
                   child: Text(
                 widget.prezzo.toString(),
-                style: TextStyle(fontSize: 13),
+                style: TextStyle(fontSize: 13,color: textCircleColor ),
               ),
             ),
             padding: EdgeInsets.all(2.0),
             decoration: BoxDecoration(
-              color: Colors.limeAccent[400],
+              color: circle,
               shape: BoxShape.circle,
             ),
           ),

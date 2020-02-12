@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:tracky/Services/Network/Api/APIResponse.dart';
 import 'package:tracky/Services/Network/Api/Simple/Product.dart' as p;
-import 'package:tracky/UI/Screen/HomePageWidget.dart';
 import 'package:tracky/UI/Screen/List/SlidableListWidget.dart';
 import 'package:tracky/Services/Network/Api/Api.dart' as api;
+import 'package:tracky/UI/Screen/Search/SearchProductItem.dart';
+import 'package:tracky/UI/SimpleItems/colorsPalette.dart';
 
 var border = OutlineInputBorder(borderRadius: BorderRadius.circular(32.0));
 
 TextEditingController searchBar = TextEditingController();
 
 class MySearchPage extends StatefulWidget {
+  String name;
+  double price;
+  String producer;
   @override
   _MySearchPageState createState() => _MySearchPageState();
 }
@@ -36,24 +39,29 @@ class _MySearchPageState extends State<MySearchPage> {
           ),
           Flexible(
               child: TextField(
+                  style: TextStyle(color: textColor),
                   controller: searchBar,
                   decoration: InputDecoration(
                     hintText: "Search Product",
                     border: border,
                   ))),
-          IconButton(
-            icon: Icon(OMIcons.search),
-             onPressed: getProduct)
+          IconButton(icon: Icon(OMIcons.search), onPressed: getProduct)
         ]),
       ],
     ));
   }
 
-  void getProduct(){
-    
-    Future<APIResponse<p.Product>> product = api.getProductByLink(searchBar.text);
-    product.then((res){
-      
+  void getProduct() {
+    Future<APIResponse<p.Product>> product =
+        api.getProductByLink(searchBar.text);
+    product.then((res) {
+      widget.name = res.data.name;
+      widget.price = res.data.price;
+      widget.producer = res.data.producer;
+      print(res.data);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return SearchProductItem(widget.name, widget.price, widget.producer);
+      }));
     });
   }
 }
