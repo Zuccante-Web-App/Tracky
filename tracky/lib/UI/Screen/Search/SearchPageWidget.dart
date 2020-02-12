@@ -23,19 +23,20 @@ class _MySearchPageState extends State<MySearchPage> {
           IconButton(
             icon: Icon(OMIcons.arrowBackIos),
             onPressed: () {
-              /*Navigator.of(context).push(MaterialPageRoute(
+              Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) {
                   return MySlidableListWidget();
                 },
-              ));*/
+              ));
             },
           ),
-          TextField(
-              controller: searchBar,
-              decoration: InputDecoration(
-                hintText: "Search Product",
-                border: border,
-              ))
+          Flexible(
+              child: TextField(
+                  controller: searchBar,
+                  decoration: InputDecoration(
+                    hintText: "Search Product",
+                    border: border,
+                  )))
         ]),
       ],
     ));
