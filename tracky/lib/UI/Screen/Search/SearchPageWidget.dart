@@ -54,6 +54,7 @@ class _MySearchPageState extends State<MySearchPage> {
   void getProduct() {
     Future<APIResponse<p.Product>> product =
         api.getProductByLink(searchBar.text);
+        searchBar.clear();
     product.then((res) {
       widget.name = res.data.name;
       widget.price = res.data.price;

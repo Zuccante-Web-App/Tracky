@@ -46,7 +46,7 @@ class _MySlidableListWidgetState extends State<MySlidableListWidget> {
             },
             alignment: AlignmentDirectional.centerStart,
           )
-        ],
+        ], 
       ),
       body: Center(
         child: AnimatedList(
