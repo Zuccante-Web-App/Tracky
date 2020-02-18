@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tracky/Services/Database/Dao/dao.dart';
 import 'package:tracky/UI/Screen/List/SlidableListWidget.dart';
 
 class HomePageWidget extends StatefulWidget {
-  HomePageWidget({Key key, this.title}) : super(key: key);
+  Dao dao;
+
+  HomePageWidget(this.dao, {Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -13,6 +16,6 @@ class HomePageWidget extends StatefulWidget {
 class _HomePageState extends State<HomePageWidget> {
   @override
   Widget build(BuildContext context) {
-    return MySlidableListWidget();
+    return MySlidableListWidget(widget.dao);
   }
 }

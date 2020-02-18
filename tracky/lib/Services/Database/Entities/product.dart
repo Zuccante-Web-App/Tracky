@@ -10,14 +10,15 @@ import '../Entities/currency.dart';
 	]
 )
 class Product {
-    @PrimaryKey(autoGenerate: true)
+  
+  @PrimaryKey(autoGenerate: true)
 	final int id;
-  	final String name;
+  final String name;
 	final String link;
 	final String seller;
 	final int targetAmount;
-
+  bool isFavourite;
 	final int idCurrency;
 
-	Product(this.id, this.name, this.link, this.seller, this.targetAmount, this.idCurrency);
+	Product(this.id, this.name, this.link, this.seller, this.targetAmount, this.isFavourite, this.idCurrency);
 }

@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:tracky/Services/Database/Dao/dao.dart';
+import 'package:tracky/Services/Database/Entities/currency.dart';
+import 'package:tracky/Services/Database/Entities/product.dart' as DB;
 import 'package:tracky/UI/Screen/List/SlidableListItemWidget.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:tracky/UI/Screen/Search/SearchPageWidget.dart';
 
-
-List<IconData> _iconList = List<IconData>();
-List<bool> _boolFavouriteList = List<bool>();
-
 class MySlidableListWidget extends StatefulWidget {
-  GlobalKey<AnimatedListState> _productList = GlobalKey<AnimatedListState>();
-  List<String> _list;
-  List<Product> _myList = [
-    new Product('TelefonoX', 500),
-    new Product('nome', 1221),
-    new Product("p3", 111)
-  ];
 
-  MySlidableListWidget({Key key, this.title}) : super(key: key);
+  final Dao dao;
+
+  MySlidableListWidget(this.dao , {Key key, this.title}) : super(key: key);
   final String title;
 
   @override
@@ -25,11 +19,23 @@ class MySlidableListWidget extends StatefulWidget {
 }
 
 class _MySlidableListWidgetState extends State<MySlidableListWidget> {
+
+  void _deleteCallback(DB.Product product) {
+    print("[INFO] Canncellando product ${product.name}");
+     widget.dao.deleteProduct(product);
+  }
+
+  void _toggleFavouriteCallback(DB.Product product) {
+    print("[INFO] Preferando product ${product.name}");
+    product.isFavourite = ! product.isFavourite;
+     widget.dao.updateProduct(product);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('La tua lista'),
+        title: Text('Your products'),
         actions: <Widget>[
           IconButton(
             icon: Icon(OMIcons.search),
@@ -48,40 +54,61 @@ class _MySlidableListWidgetState extends State<MySlidableListWidget> {
         ],
       ),
       body: Center(
-        child: AnimatedList(
-            key: widget._productList,
-            initialItemCount: widget._myList.length,
-            itemBuilder: (context, index, animation) {
-              for (var i = 0; i < widget._myList.length - 1; i++) {
-                _iconList.add(OMIcons.starBorder);
-                _boolFavouriteList.add(false);
-              }
-              return ScaleTransition(
-                scale: animation,
-                child: SlidableListItemWidget(
-                  widget._myList[index].nome,
-                  widget._myList[index].prezzo,
-                  index,
-                  widget._productList,
-                  widget._myList,
-                  _boolFavouriteList,
-                  _iconList,
-                ),
-              );
-            }),
+        child: Container(
+          child: Column(
+            children: <Widget>[
+               Expanded(
+                 child: StreamBuilder<List<DB.Product>>(
+                    stream: widget.dao.getAllFavouriteProductsAsStream(),
+                    builder: (BuildContext context, AsyncSnapshot<List<DB.Product>> snapshot) {
+                        if(!snapshot.hasData) return Container();
+                        final products = snapshot.data;
+                        print(">>> P : ${products.length}");
+                        return ListView.builder(
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            return SlidableListItemWidget(
+                                product: products[index],
+                                deleteCallback: _deleteCallback,
+                                toggleFavouriteCallback: _toggleFavouriteCallback,
+                            );
+                          },
+                        );
+                    }
+                  ),
+               ),
+              Expanded(
+                child: StreamBuilder<List<DB.Product>>(
+                stream: widget.dao.getAllNonFavouriteProductsAsStream(),
+                builder: (BuildContext context, AsyncSnapshot<List<DB.Product>> snapshot) {
+                    if(!snapshot.hasData) return Container();
+                    final products = snapshot.data;
+                    print(">>>NP ${products.length}");
+                    return ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        return SlidableListItemWidget(
+                          product: products[index],
+                          deleteCallback: _deleteCallback,
+                          toggleFavouriteCallback: _toggleFavouriteCallback,
+                        );
+                      },
+                    );
+                }
+              ),
+              )
+            ],
+          )
+        )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          widget.dao.insertCurrency(Currency(null, "\$"));
+          widget.dao.insertProduct(DB.Product(null, "sii", "fantasioso", "filippo", 7,false, 1));
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
 }
 
-class Product {
-  String nome;
-  int prezzo;
-  int index;
-  Key key;
-
-  Product(
-    this.nome,
-    this.prezzo,
-  );
-}

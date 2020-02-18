@@ -60,11 +60,7 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  PriceDao _priceDaoInstance;
-
-  ProductDao _productDaoInstance;
-
-  CurrencyDao _currencyDaoInstance;
+  Dao _daoInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
@@ -89,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `symbol` TEXT)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Product` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `link` TEXT, `seller` TEXT, `targetAmount` INTEGER, `idCurrency` INTEGER, FOREIGN KEY (`idCurrency`) REFERENCES `Currency` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `Product` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `link` TEXT, `seller` TEXT, `targetAmount` INTEGER, `isFavourite` INTEGER, `idCurrency` INTEGER, FOREIGN KEY (`idCurrency`) REFERENCES `Currency` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -97,24 +93,19 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  PriceDao get priceDao {
-    return _priceDaoInstance ??= _$PriceDao(database, changeListener);
-  }
-
-  @override
-  ProductDao get productDao {
-    return _productDaoInstance ??= _$ProductDao(database, changeListener);
-  }
-
-  @override
-  CurrencyDao get currencyDao {
-    return _currencyDaoInstance ??= _$CurrencyDao(database, changeListener);
+  Dao get dao {
+    return _daoInstance ??= _$Dao(database, changeListener);
   }
 }
 
-class _$PriceDao extends PriceDao {
-  _$PriceDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
+class _$Dao extends Dao {
+  _$Dao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _currencyInsertionAdapter = InsertionAdapter(
+            database,
+            'Currency',
+            (Currency item) =>
+                <String, dynamic>{'id': item.id, 'symbol': item.symbol}),
         _priceInsertionAdapter = InsertionAdapter(
             database,
             'Price',
@@ -123,50 +114,7 @@ class _$PriceDao extends PriceDao {
                   'idProduct': item.idProduct,
                   'date': item.date,
                   'amount': item.amount
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  static final _priceMapper = (Map<String, dynamic> row) => Price(
-      row['id'] as int,
-      row['idProduct'] as int,
-      row['date'] as String,
-      row['amount'] as int);
-
-  final InsertionAdapter<Price> _priceInsertionAdapter;
-
-  @override
-  Future<List<Price>> findAllPrices() async {
-    return _queryAdapter.queryList('SELECT * FROM Price', mapper: _priceMapper);
-  }
-
-  @override
-  Future<Price> findPriceById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Price WHERE id = ?',
-        arguments: <dynamic>[id], mapper: _priceMapper);
-  }
-
-  @override
-  Future<Price> findLatestPriceFromProductId(int id) async {
-    return _queryAdapter.query(
-        'SELECT Price.* FROM Price JOIN Product ON Price.idProduct = Product.id WHERE Product.id = ? LIMIT=1',
-        arguments: <dynamic>[id],
-        mapper: _priceMapper);
-  }
-
-  @override
-  Future<void> insertPrice(Price price) async {
-    await _priceInsertionAdapter.insert(price, sqflite.ConflictAlgorithm.abort);
-  }
-}
-
-class _$ProductDao extends ProductDao {
-  _$ProductDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
+                }),
         _productInsertionAdapter = InsertionAdapter(
             database,
             'Product',
@@ -176,52 +124,38 @@ class _$ProductDao extends ProductDao {
                   'link': item.link,
                   'seller': item.seller,
                   'targetAmount': item.targetAmount,
+                  'isFavourite': item.isFavourite ? 1 : 0,
                   'idCurrency': item.idCurrency
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  static final _productMapper = (Map<String, dynamic> row) => Product(
-      row['id'] as int,
-      row['name'] as String,
-      row['link'] as String,
-      row['seller'] as String,
-      row['targetAmount'] as int,
-      row['idCurrency'] as int);
-
-  final InsertionAdapter<Product> _productInsertionAdapter;
-
-  @override
-  Future<List<Product>> findAllProducts() async {
-    return _queryAdapter.queryList('SELECT * FROM Product',
-        mapper: _productMapper);
-  }
-
-  @override
-  Future<Product> findProductById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Product WHERE id = ?',
-        arguments: <dynamic>[id], mapper: _productMapper);
-  }
-
-  @override
-  Future<void> insertProduct(Product product) async {
-    await _productInsertionAdapter.insert(
-        product, sqflite.ConflictAlgorithm.abort);
-  }
-}
-
-class _$CurrencyDao extends CurrencyDao {
-  _$CurrencyDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
-        _currencyInsertionAdapter = InsertionAdapter(
+                },
+            changeListener),
+        _productUpdateAdapter = UpdateAdapter(
             database,
-            'Currency',
-            (Currency item) =>
-                <String, dynamic>{'id': item.id, 'symbol': item.symbol});
+            'Product',
+            ['id'],
+            (Product item) => <String, dynamic>{
+                  'id': item.id,
+                  'name': item.name,
+                  'link': item.link,
+                  'seller': item.seller,
+                  'targetAmount': item.targetAmount,
+                  'isFavourite': item.isFavourite ? 1 : 0,
+                  'idCurrency': item.idCurrency
+                },
+            changeListener),
+        _productDeletionAdapter = DeletionAdapter(
+            database,
+            'Product',
+            ['id'],
+            (Product item) => <String, dynamic>{
+                  'id': item.id,
+                  'name': item.name,
+                  'link': item.link,
+                  'seller': item.seller,
+                  'targetAmount': item.targetAmount,
+                  'isFavourite': item.isFavourite ? 1 : 0,
+                  'idCurrency': item.idCurrency
+                },
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
@@ -232,23 +166,121 @@ class _$CurrencyDao extends CurrencyDao {
   static final _currencyMapper = (Map<String, dynamic> row) =>
       Currency(row['id'] as int, row['symbol'] as String);
 
+  static final _priceMapper = (Map<String, dynamic> row) => Price(
+      row['id'] as int,
+      row['idProduct'] as int,
+      row['date'] as String,
+      row['amount'] as int);
+
+  static final _productMapper = (Map<String, dynamic> row) => Product(
+      row['id'] as int,
+      row['name'] as String,
+      row['link'] as String,
+      row['seller'] as String,
+      row['targetAmount'] as int,
+      (row['isFavourite'] as int) != 0,
+      row['idCurrency'] as int);
+
   final InsertionAdapter<Currency> _currencyInsertionAdapter;
 
+  final InsertionAdapter<Price> _priceInsertionAdapter;
+
+  final InsertionAdapter<Product> _productInsertionAdapter;
+
+  final UpdateAdapter<Product> _productUpdateAdapter;
+
+  final DeletionAdapter<Product> _productDeletionAdapter;
+
   @override
-  Future<List<Currency>> findAllCurrencies() async {
+  Future<List<Currency>> getAllCurrencies() async {
     return _queryAdapter.queryList('SELECT * FROM Currency',
         mapper: _currencyMapper);
   }
 
   @override
-  Future<Currency> findCurrencyById(int id) async {
+  Future<Currency> getCurrencyById(int id) async {
     return _queryAdapter.query('SELECT * FROM Currency WHERE id = ?',
         arguments: <dynamic>[id], mapper: _currencyMapper);
+  }
+
+  @override
+  Future<List<Price>> getAllPrices() async {
+    return _queryAdapter.queryList('SELECT * FROM Price', mapper: _priceMapper);
+  }
+
+  @override
+  Future<Price> getPriceById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Price WHERE id = ?',
+        arguments: <dynamic>[id], mapper: _priceMapper);
+  }
+
+  @override
+  Future<Price> getLatestPriceFromProductId(int id) async {
+    return _queryAdapter.query(
+        'SELECT Price.* FROM Price JOIN Product ON Price.idProduct = Product.id WHERE Product.id = ? LIMIT=1',
+        arguments: <dynamic>[id],
+        mapper: _priceMapper);
+  }
+
+  @override
+  Stream<List<Product>> getAllProductsAsStream() {
+    return _queryAdapter.queryListStream('SELECT * FROM Product',
+        tableName: 'Product', mapper: _productMapper);
+  }
+
+  @override
+  Future<List<Product>> getAllProducts() async {
+    return _queryAdapter.queryList('SELECT * FROM Product',
+        mapper: _productMapper);
+  }
+
+  @override
+  Stream<List<Product>> getAllFavouriteProductsAsStream() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM Product WHERE isFavourite',
+        tableName: 'Product',
+        mapper: _productMapper);
+  }
+
+  @override
+  Stream<List<Product>> getAllNonFavouriteProductsAsStream() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM Product WHERE not isFavourite',
+        tableName: 'Product',
+        mapper: _productMapper);
+  }
+
+  @override
+  Future<Product> getProductById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Product WHERE id = ?',
+        arguments: <dynamic>[id], mapper: _productMapper);
   }
 
   @override
   Future<void> insertCurrency(Currency currency) async {
     await _currencyInsertionAdapter.insert(
         currency, sqflite.ConflictAlgorithm.abort);
+  }
+
+  @override
+  Future<void> insertPrice(Price price) async {
+    await _priceInsertionAdapter.insert(price, sqflite.ConflictAlgorithm.abort);
+  }
+
+  @override
+  Future<void> insertProduct(Product product) async {
+    await _productInsertionAdapter.insert(
+        product, sqflite.ConflictAlgorithm.abort);
+  }
+
+  @override
+  Future<void> updateProduct(Product product) async {
+    await _productUpdateAdapter.update(
+        product, sqflite.ConflictAlgorithm.abort);
+  }
+
+  @override
+  Future<void> deleteProduct(Product product) async {
+    await _productDeletionAdapter.delete(product);
   }
 }

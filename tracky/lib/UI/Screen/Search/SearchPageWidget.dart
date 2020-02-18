@@ -25,7 +25,7 @@ class _MySearchPageState extends State<MySearchPage> {
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) {
-                  return MySlidableListWidget();
+                  return MySlidableListWidget(null);
                 },
               ));
             },
