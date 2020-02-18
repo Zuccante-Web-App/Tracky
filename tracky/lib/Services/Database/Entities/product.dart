@@ -1,4 +1,5 @@
 import 'package:floor/floor.dart';
+import 'package:tracky/Services/Network/Api/Simple/Product.dart';
 import '../Entities/currency.dart';
 @Entity(
 	foreignKeys: [
@@ -9,7 +10,7 @@ import '../Entities/currency.dart';
 		)
 	]
 )
-class Product {
+class Product implements Comparable<Product>{
   
   @PrimaryKey(autoGenerate: true)
 	final int id;
@@ -21,4 +22,12 @@ class Product {
 	final int idCurrency;
 
 	Product(this.id, this.name, this.link, this.seller, this.targetAmount, this.isFavourite, this.idCurrency);
+
+  @override
+  int compareTo(Product p) {
+    if((isFavourite && p.isFavourite) || (!isFavourite && !p.isFavourite)) return id.compareTo(p.id);
+    if(isFavourite && !p.isFavourite) return -1;
+    return 1;
+  }
+
 }

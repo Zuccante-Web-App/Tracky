@@ -55,15 +55,12 @@ class _MySlidableListWidgetState extends State<MySlidableListWidget> {
       ),
       body: Center(
         child: Container(
-          child: Column(
-            children: <Widget>[
-               Expanded(
-                 child: StreamBuilder<List<DB.Product>>(
-                    stream: widget.dao.getAllFavouriteProductsAsStream(),
+          child: StreamBuilder<List<DB.Product>>(
+                    stream: widget.dao.getAllProductsAsStream(),
                     builder: (BuildContext context, AsyncSnapshot<List<DB.Product>> snapshot) {
                         if(!snapshot.hasData) return Container();
                         final products = snapshot.data;
-                        print(">>> P : ${products.length}");
+                        products.sort();
                         return ListView.builder(
                           itemCount: products.length,
                           itemBuilder: (context, index) {
@@ -76,29 +73,6 @@ class _MySlidableListWidgetState extends State<MySlidableListWidget> {
                         );
                     }
                   ),
-               ),
-              Expanded(
-                child: StreamBuilder<List<DB.Product>>(
-                stream: widget.dao.getAllNonFavouriteProductsAsStream(),
-                builder: (BuildContext context, AsyncSnapshot<List<DB.Product>> snapshot) {
-                    if(!snapshot.hasData) return Container();
-                    final products = snapshot.data;
-                    print(">>>NP ${products.length}");
-                    return ListView.builder(
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        return SlidableListItemWidget(
-                          product: products[index],
-                          deleteCallback: _deleteCallback,
-                          toggleFavouriteCallback: _toggleFavouriteCallback,
-                        );
-                      },
-                    );
-                }
-              ),
-              )
-            ],
-          )
         )
       ),
       floatingActionButton: FloatingActionButton(
