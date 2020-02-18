@@ -15,12 +15,9 @@ class SlidableListItemWidget extends StatefulWidget {
   int index;
   GlobalKey<AnimatedListState> _productList;
   List<Product> _myList;
-  List<bool> _boolList;
-  List<IconData> _iconList;
- 
 
   SlidableListItemWidget(this.nome, this.prezzo, this.index, this._productList,
-      this._myList, this._boolList, this._iconList);
+      this._myList);
 
   @override
   _SlidableListItemWidgetState createState() => _SlidableListItemWidgetState();
@@ -31,7 +28,6 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
   Widget build(BuildContext context) {
      Brightness brightnessValue = MediaQuery.of(context).platformBrightness;
      bool isDark = brightnessValue == Brightness.dark;
-    //**Color */
     if(isDark){
       circle = greenDarkCircle;
       textColor = Colors.white;
@@ -76,12 +72,6 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
             color: Colors.red,
             icon: OMIcons.delete,
             onTap: delete),
-        IconSlideAction(
-          caption: 'Favorite',
-          color: Colors.amber[300],
-          icon: widget._iconList[widget.index],
-          onTap: makeFavorite,
-        ),
       ],
     );
   }
@@ -105,7 +95,7 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
     });
   }
 
-  void makeFavorite() {
+  /*void makeFavorite() {
     setState(() {
       Product favoriteProduct = widget._myList[widget.index];
       AnimatedListRemovedItemBuilder builder = (context, animation) {
@@ -128,5 +118,5 @@ class _SlidableListItemWidgetState extends State<SlidableListItemWidget> {
       }
       widget._productList.currentState.insertItem(widget.index);
     });
-  }
+  }*/
 }

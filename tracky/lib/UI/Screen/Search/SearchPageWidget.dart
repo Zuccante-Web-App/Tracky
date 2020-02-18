@@ -52,14 +52,13 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 
   void getProduct() {
-    Future<APIResponse<p.Product>> product =
-        api.getProductByLink(searchBar.text);
-        searchBar.clear();
+    Future<APIResponse<p.Product>> product = api.getProductByLink(searchBar.text);
+    searchBar.clear();
     product.then((res) {
       widget.name = res.data.name;
       widget.price = res.data.price;
       widget.producer = res.data.producer;
-      print(res.data);
+
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SearchProductItem(widget.name, widget.price, widget.producer);
       }));

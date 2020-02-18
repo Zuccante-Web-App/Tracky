@@ -65,8 +65,6 @@ class _MySlidableListWidgetState extends State<MySlidableListWidget> {
                   index,
                   widget._productList,
                   widget._myList,
-                  _boolFavouriteList,
-                  _iconList,
                 ),
               );
             }),
