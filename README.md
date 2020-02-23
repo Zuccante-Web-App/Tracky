@@ -1,6 +1,6 @@
 
 
-<img src="./icona/Icona.png" align="right" height="120" width="120"/>
+<img src="./icona/Icona2.png" align="right" height="120" width="120"/>
               
 # Tracky 
 ## Un price tracker per Amazon 
@@ -26,4 +26,4 @@ our aim is to make the world better 💪🏻
  
   #### Network
   
-  __Mattia:__ The leader (Manco sua mamma ci crede) 😎 
+  __Mattia:__ The leader (even his mum doesn't beliv it) 😎 
